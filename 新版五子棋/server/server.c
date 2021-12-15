@@ -8,14 +8,38 @@
 #include <sys/types.h>
 #include "server.h"
 
-#define BUFSIZE 20
+#define BUFSIZE 64
+
+void *Login(void *agrs)
+{
+    int clifd = *(int*)agrs;
+
+    char buf[64];
+    strcpy(buf,(char*)(agrs+sizeof(int)));
+    char account[32];
+    char password[32];
+    strncpy(account,buf,32);
+    *strchr(account,'\t')= '\0';
+    strncpy(password,strchr(buf,'\t')+1,32);
+
+    int rslt = Account_Login(account,password);
+    if (rslt){
+        strcpy(buf,"fail");
+        send(clifd,buf,BUFSIZE,0);
+    }
+    else{
+        strcpy(buf,"success");
+        send(clifd,buf,BUFSIZE,0);
+    }
+
+    close(clifd);
+    pthread_exit(NULL);
+}
 
 int main()
 {   
-    int clifd;
     struct sockaddr_in cliaddr;
-    int size = sizeof(cliaddr);
-    char* buf[20] = {0};
+    int size = sizeof(struct sockaddr_in);
 
     int servfd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
     struct sockaddr_in servaddr;
@@ -29,30 +53,17 @@ int main()
     struct sockaddr_in cliaddr;
     int size = sizeof(cliaddr);
 
-    //≥ı ºªØ’À∫≈œµÕ≥
+    //ÂàùÂßãÂåñË¥¶Âè∑Á≥ªÁªü
     Initialize_All_Account_Info();
-    
+
+    int clifd;
+    char request[64];
 
     while(1)
     {
         clifd = accept(servfd,(struct sockaddr*)&cliaddr,&size);
-        recv(clifd,buf,BUFSIZE,0);
-        int req = atoi(buf);
-        switch (req)
-        {
-            case 1:
-                /*µ«¬º*/
-                break;
-            case 2:
-                /*◊¢≤·*/
-                break;
-            case 3:
-                /*–ﬁ∏ƒ√‹¬Î*/
-                break;
-            case 4:
-                /*∂‘æ÷*/
-                break;
-        }
+        recv(clifd,request,BUFSIZE,0);
+        int req = request[0];
     }
 
     close(servfd);
