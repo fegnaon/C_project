@@ -34,7 +34,7 @@ int main()
     struct sockaddr_in servaddr,cliaddr;
     memset(&servaddr,0,sizeof(servaddr));
     servaddr.sin_family= AF_INET;
-    servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    // servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
     servaddr.sin_port = htons(6666);
     bind(servfd,(struct sockaddr*)&servaddr,size);
     listen(servfd,20);
@@ -80,6 +80,9 @@ int main()
             printf("处理了一条下棋请求\n");
             Chess(request,sbuf);
             send(clifd,sbuf,64,0);break;
+        case 7:
+            printf("处理了一条离线请求\n");
+            PlayerExit(request);break;
         }
         close(clifd);
     }

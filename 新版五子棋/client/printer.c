@@ -32,7 +32,7 @@ void PrintTable(Table table)
         printf("%2d ",i+1);
         for (j = 0;j < 15; j ++)
         {
-            printf("%c ",table.board[i][j]);
+            printf("%c  ",table.board[i][j]);
         }
         printf("\n");
     }

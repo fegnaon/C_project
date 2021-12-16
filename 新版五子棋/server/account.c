@@ -9,6 +9,8 @@
 #include <stdbool.h>
 #include "account.h"
 
+static char PlayerOnline[100][20];
+
 Node* Creat_Node(char *ac,char *psw,int w,int l)
 {
     Node *node = (Node*)malloc(sizeof(Node));
@@ -62,6 +64,11 @@ int Initialize_All_Account_Info()
         }
     }
     fclose(fp);
+
+    for (int i = 0;i < 100;i ++)
+    {
+        strcpy(PlayerOnline[i],"NULL");
+    }
 }
 
 void Login(Request request,char *buf)
@@ -82,10 +89,28 @@ void Login(Request request,char *buf)
         Trans(buf,&answer,64);
         return;
     }
+
+    int i,j = 0,no;
+    for (i = 0;i < 100;i ++)
+    {
+        if (!strcmp(PlayerOnline[i],request.account)){
+            answer.num1 = 2;
+            Trans(buf,&answer,64);
+            return;
+        }
+        if (j == 0){
+            if (!strcmp(PlayerOnline[i],"NULL")){
+                no = i;
+            }
+        }
+    }
+    strcpy(PlayerOnline[no],request.account);
+
     answer.num1 = true;
     answer.num2 = player->win;
     answer.num3 = player->lose;
     Trans(buf,&answer,64);
+
     return;
 }
 
@@ -136,6 +161,18 @@ void Modify(Request request,char *buf)
     answer.num1 = true;
     Trans(buf,&answer,64);
     return;
+}
+
+void PlayerExit(Request request)
+{
+    int i;
+    for (i = 0;i < 100;i ++)
+    {
+        if (!strcmp(PlayerOnline[i],request.account)){
+            strcpy(PlayerOnline[i],"NULL");
+            return;
+        }
+    }
 }
 
 void Count(char *player0,char *player1,int turn)

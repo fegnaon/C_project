@@ -33,12 +33,13 @@ extern void PrintMainMenu();
 extern void PrintLoginInterface();
 extern void PrintTable(Table table);
 
-Request PackLoginRequest();
-Request PackRegisterRequest();
-Request PackModifyRequest();
-Request PackStartRequest();
-Request PackPullTableRequest();
-Request PackChessRequest();
+extern Request PackLoginRequest();
+extern Request PackRegisterRequest();
+extern Request PackModifyRequest();
+extern Request PackStartRequest();
+extern Request PackPullTableRequest();
+extern Request PackChessRequest();
+extern Request PackExitRequest();
 
 void Trans(char *buf,void *res,int len);
 void LoadStatus(Accept accept);

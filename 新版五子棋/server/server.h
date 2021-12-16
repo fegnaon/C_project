@@ -28,6 +28,7 @@ extern void SaveAccountData();
 extern void Login(Request request,char *buf);
 extern void Register(Request request,char *buf);
 extern void Modify(Request request,char *buf);
+extern void PlayerExit(Request request);
 void Start(Request request,char *buf);
 void PushTable(Request request,char *buf);
 void Chess(Request request,char *buf);

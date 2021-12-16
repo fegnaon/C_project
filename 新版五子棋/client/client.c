@@ -16,7 +16,7 @@ int main()
     WSAStartup(MAKEWORD(2,2),&wsaData);
     struct sockaddr_in servaddr;
     memset(&servaddr,0,sizeof(servaddr));
-    servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    servaddr.sin_addr.s_addr = inet_addr("1.14.96.36");
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(6666);
     
@@ -27,7 +27,7 @@ int main()
 
     player.table_number = 0;
 
-//鍒濆椤甸潰
+//初始菜单
     while(true)
     {   
         system("cls");
@@ -53,7 +53,14 @@ int main()
                 break;
             }
             else{
-                printf("登录失败，账号不存在或密码错误");
+                
+                printf("登录失败");
+                if (accept.num1 == 0){
+                    printf(",账号不存在或密码错误\n");
+                }
+                else if (accept.num1 == 2){
+                    printf(",该账号已登录,不能重复登录\n");
+                }
                 system("pause");
                 continue;
             }
@@ -76,7 +83,7 @@ int main()
                 continue;
             }
             else{
-                printf("注册失败，账号已存在");
+                printf("注册失败,该账号已存在\n");
                 system("pause");
                 continue;
             }
@@ -86,7 +93,7 @@ int main()
         }
     }
 
-//涓昏彍鍗?
+//主菜单
     while(true)
     {
         system("cls");
@@ -110,8 +117,6 @@ int main()
                 printf("上桌成功!\n");
                 system("pause");
 
-                //寮�濮嬫父鎴?
-                //姣忕閽熸媺鍙栦竴娆℃妗岋紝濡傛灉鍒拌鑷繁涓嬩簡锛屽氨涓嬫
                 while(true)
                 {
                     request = PackPullTableRequest();
@@ -137,7 +142,6 @@ int main()
 
                     if (strcmp(new_table.player1,"NO PLAYER")){
                         if ((new_table.turn == 0 && (!strcmp(new_table.player0,player.account)))||(new_table.turn == 1 && (!strcmp(new_table.player1,player.account)))){
-                            //濡傛灉鍒版湰鏂逛簡锛屽氨鍙戦�佷竴涓笅妫嬭姹?
                             while (true)
                             {
                                 request = PackChessRequest();
@@ -152,7 +156,7 @@ int main()
                                 accept = *(Accept*)sbuf;
 
                                 if (accept.num1 == 0){
-                                    printf("下棋失败，这里已经有一个棋子了");
+                                    printf("下棋失败,这里已经有一个棋子了\n");
                                 }
                                 else if (accept.num1 == 2){
                                     printf("你赢了!");
@@ -170,7 +174,7 @@ int main()
                         }
                     }
                     else{
-                        printf("当前桌上只有您一位玩家，请等待...\n");
+                        printf("当前桌上你有一位玩家,请等待...\n");
                     }
                     delay();
                 }
@@ -207,106 +211,16 @@ int main()
             }
         }
         else if(choice == 3){
+            request = PackExitRequest();
+            Trans(sbuf,&request,64);
+
+            SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
+            connect(clifd,(struct sockaddr*)&servaddr,sizeof(servaddr));
+            send(clifd,sbuf,64,0);
+            closesocket(clifd);
             exit(0);
         }
     }
-}
-
-Request PackLoginRequest()
-{
-    Request request = {.type = 1};
-
-    printf("请输入您的账号:");
-    scanf("%16s",request.account);
-    strncpy(player.account,request.account,16);
-    printf("请输入您的密码:");
-    scanf("%16s",request.password);
-    request.table_number = 0;
-    request.row = 0;
-    request.column = 0;
-
-    return request;
-}
-
-Request PackRegisterRequest()
-{
-    Request request = {.type = 2};
-
-    printf("请输入您的账号(16个字符以内):");
-    scanf("%16s",request.account);
-    printf("请输入您的密码(16个字符以内):");
-    scanf("%16s",request.password);
-    request.table_number = 0;
-    request.row = 0;
-    request.column = 0;
-
-    return request;
-}
-
-Request PackModifyRequest()
-{
-    Request request = {.type = 3};
-    strncpy(request.account,player.account,16);
-
-    printf("请输入您的新密码:");
-    scanf("%16s",request.password);
-    request.table_number = 0;
-    request.row = 0;
-    request.column = 0;
-
-    return request;
-}
-
-Request PackStartRequest()
-{
-    Request request = {.type = 4};
-    strncpy(request.account,player.account,16);
-
-    while(1)
-    {
-        printf("请输入您要选择的桌号(1-40):");
-        scanf("%d",&(request.table_number));
-        if (request.table_number <= 0){
-            printf("桌号必须大于0!");
-        }
-        else if (request.table_number > 40){
-            printf("桌号必须小于100!");
-        }
-        else{
-            break;
-        }
-    }
-
-    return request;
-}
-
-Request PackPullTableRequest()
-{
-    Request request = {.type = 5};
-    strncpy(request.account,player.account,16);
-    request.table_number = player.table_number;
-
-    return request;
-}
-
-Request PackChessRequest()
-{
-    Request request = {.type = 6};
-    strncpy(request.account,player.account,16);
-    request.table_number = player.table_number;
-    while (1)
-    {
-        printf("轮到你下棋了，请输入下棋的坐标:");
-        scanf("%d %d",&(request.row),&(request.column));
-        if (request.row > 15 || request.row <= 0 || request.column > 15 || request.column <= 0){
-            printf("超出棋盘范围!\n");
-        }
-        else{
-            break;
-        }
-    }
-    
-    return request;
 }
 
 void Trans(char *buf,void *res,int len)

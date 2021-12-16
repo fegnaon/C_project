@@ -35,6 +35,7 @@ void SaveAccountData();
 void Login(Request request,char *buf);
 void Register(Request request,char *buf);
 void Modify(Request request,char *buf);
+void PlayerExit(Request request);
 
 void Count(char *player0,char *player1,int turn);
 
