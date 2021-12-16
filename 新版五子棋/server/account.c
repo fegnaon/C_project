@@ -7,8 +7,8 @@
 Node* Creat_Node(char *ac,char *psw,int w,int l)
 {
     Node *node = (Node*)malloc(sizeof(Node));
-    strncpy(node->account,ac,15);
-    strncpy(node->password,psw,15);
+    strncpy(node->account,ac,16);
+    strncpy(node->password,psw,16);
     node->win = w;
     node->lose = l;
     node->next = NULL;
@@ -60,18 +60,71 @@ int Initialize_All_Account_Info()
     fclose(fp);
 }
 
-int Account_Login(const char *ac,const char *psw)
+void Login(Request request,char *buf)
 {
     Node *player = all_account_head.next;
-    while(strcmp(player->account,ac))
+    Answer answer = {0};
+    while(strcmp(player->account,request.account))
     {
         if (!player){
-            return -1;
+            answer.num1 = false;
+            Trans(buf,&answer,64);
+            return;
         }
         player = player->next;
     }
-    if(strcmp(player->password,psw)){
-        return -1;
+    if(strcmp(player->password,request.password)){
+        answer.num1 = false;
+        Trans(buf,&answer,64);
+        return;
     }
-    return 0;
+    answer.num1 = true;
+    answer.num2 = player->win;
+    answer.num3 = player->lose;
+    Trans(buf,&answer,64);
+    return;
+}
+
+void Register(Request request,char *buf)
+{
+    Node *last = all_account_head.next;
+    Answer answer = {0};
+
+    if (last)
+    {
+        while(last->next)
+        {   
+            if (!strcmp(last->account,request.account)){
+                answer.num1 = false;
+                Trans(buf,&answer,64);
+                return;
+            }
+            last = last->next;
+        }
+        last->next = Creat_Node(request.account,request.password,0,0);
+        all_account_head.length ++;
+    }
+    else
+    {
+        all_account_head.next = Creat_Node(request.account,request.password,0,0);
+        all_account_head.length ++;
+    }
+    answer.num1 = true;
+    Trans(buf,&answer,64);
+    return;
+}
+
+void Modify(Request request,char *buf)
+{
+    Node *change = all_account_head.next;
+    Answer answer = {0};
+
+    while(strcmp(change->account,request.account))
+    {
+        change = change->next;
+    }
+    strcpy(change->password,request.password);
+    answer.num1 = true;
+    Trans(buf,&answer,64);
+    return;
 }

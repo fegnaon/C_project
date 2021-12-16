@@ -11,18 +11,28 @@ typedef struct Head{
     Node *next;
 }Head;
 
-typedef struct{
-    char account[16];
-    int win;
-    int lose;
-}Player;
+typedef struct request{
+    int type;
+    char account[20];
+    char password[20];
+    int table_number;
+    int row;
+    int column;
+}Request;
+
+typedef struct answer{
+    int num1;
+    int num2;
+    int num3;
+}Answer;
 
 int Initialize_All_Account_Info();
-void Account_Count(int win);
-void Account_Register();
-void Account_Change_Password();
-int Account_Login(const char *ac,const char* psw);
+void Login(Request request,char *buf);
+void Register(Request request,char *buf);
+void Modify(Request request,char *buf);
 void Close_Account_System();
+
+void Trans(char *buf,void *res,int len);
 
 Node* Creat_Node(char *account,char *password,int win,int lose);
 int Traverse_All_Account_Info(Head);
