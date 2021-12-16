@@ -7,7 +7,21 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <stdbool.h>
+#include <pthread.h>
 #include "server.h"
+
+void* CloseServer(void *a)
+{   
+    char command[32];
+    while(true)
+    {
+        scanf("%31s",command);
+        if (!strcmp(command,"exit")){
+            SaveAccountData();
+            exit(0);
+        }
+    }
+}
 
 int main()
 {
@@ -26,11 +40,14 @@ int main()
     listen(servfd,20);
     //初始化账号系统
     Initialize_All_Account_Info();
+    //初始化所有棋桌
     Initialize_All_Table();
 
     Request request;
     char sbuf[64];
     char lbuf[512];
+    pthread_t th;
+    pthread_create(&th,NULL,CloseServer,NULL);
 
     while(1)
     {
@@ -134,13 +151,15 @@ void Chess(Request request,char *buf)
     }
     if (tables[table_number].turn == 0){
         tables[table_number].board[row][column] = '0';
-        tables[table_number].turn = (tables[table_number].turn+1)%2;
     }
     else{
         tables[table_number].board[row][column] = '1';
-        tables[table_number].turn = (tables[table_number].turn+1)%2;
     }
     if (CheckIfEnd(tables[table_number].board,row,column)){
+//保存战绩
+        Count(tables[table_number].player0,tables[table_number].player1,tables[table_number].turn);
+
+//重置棋盘
         int i,j;
         for (i = 0;i < 15;i ++)
         {
@@ -156,6 +175,7 @@ void Chess(Request request,char *buf)
         Trans(buf,&answer,64);
         return;
     }
+    tables[table_number].turn = (tables[table_number].turn+1)%2;
     answer.num1 = 1;
     Trans(buf,&answer,64);
     return;

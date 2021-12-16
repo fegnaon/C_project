@@ -129,8 +129,8 @@ int main()
 
                     if (new_table.turn == -2){
                         system("cls");
-                        printf("%s %s\n",new_table.player0,new_table.player1);
                         printf("ƒ„ ‰¡À!");
+                        player.lose += 1;
                         system("pause");
                         break;
                     }
@@ -162,6 +162,10 @@ int main()
                                 else{
                                     break;
                                 }
+                            }
+                            if (accept.num1 == 2){
+                                player.win += 1;
+                                break;
                             }
                         }
                     }

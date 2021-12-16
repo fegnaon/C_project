@@ -30,9 +30,12 @@ static Head all_account_head = {.length = 0,.next = NULL};
 
 Node* Creat_Node(char *ac,char *psw,int w,int l);
 int Initialize_All_Account_Info();
+void SaveAccountData();
 
 void Login(Request request,char *buf);
 void Register(Request request,char *buf);
 void Modify(Request request,char *buf);
+
+void Count(char *player0,char *player1,int turn);
 
 extern void Trans(char *buf,void *res,int len);

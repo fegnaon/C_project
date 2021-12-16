@@ -23,6 +23,7 @@ typedef struct answer{
 Table tables[40];
 
 extern int Initialize_All_Account_Info();
+extern void SaveAccountData();
 
 extern void Login(Request request,char *buf);
 extern void Register(Request request,char *buf);
@@ -30,6 +31,8 @@ extern void Modify(Request request,char *buf);
 void Start(Request request,char *buf);
 void PushTable(Request request,char *buf);
 void Chess(Request request,char *buf);
+
+extern void Count(char *player0,char *player1,int turn);
 
 void Initialize_All_Table();
 void Trans(char *buf,void *res,int len);

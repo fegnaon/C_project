@@ -105,11 +105,16 @@ void Register(Request request,char *buf)
             }
             last = last->next;
         }
+        if (!strcmp(last->account,request.account)){
+            answer.num1 = false;
+            Trans(buf,&answer,64);
+            return;
+        }
         last->next = Creat_Node(request.account,request.password,0,0);
         all_account_head.length ++;
     }
     else
-    {
+    {   
         all_account_head.next = Creat_Node(request.account,request.password,0,0);
         all_account_head.length ++;
     }
@@ -131,4 +136,56 @@ void Modify(Request request,char *buf)
     answer.num1 = true;
     Trans(buf,&answer,64);
     return;
+}
+
+void Count(char *player0,char *player1,int turn)
+{
+    Node *player = all_account_head.next;
+    int i = 0;
+
+    while(true)
+    {
+        if (!strcmp(player->account,player0)){
+            i ++;
+            if (turn == 0){
+                player->win += 1;
+            }
+            else{
+                player->lose -= 1;
+            }
+        }
+        if (!strcmp(player->account,player1)){
+            i ++;
+            if (turn == 1){
+                player->win += 1;
+            }
+            else{
+                player->lose -= 1;
+            }
+        }
+        if (i == 2){
+            break;
+        }
+        player = player->next;
+    }
+    return;
+}
+
+void SaveAccountData()
+{
+    FILE *fp = fopen("account","w");
+
+    Node *node = all_account_head.next;
+    Node *free_node = all_account_head.next;
+
+    while(node)
+    {
+        fprintf(fp,"#%s %s %d %d\n",node->account,node->password,node->win,node->lose);
+        node = node->next;
+        free(free_node);
+        free_node = node;
+    }
+    fputc('@',fp);
+
+    fclose(fp);
 }
