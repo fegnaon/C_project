@@ -1,20 +1,3 @@
-extern int Initialize_All_Account_Info();
-extern void Account_Count(int win);
-extern void Account_Register();
-extern void Account_Change_Password();
-extern int Account_Login(const char *ac,const char* psw);
-extern void Close_Account_System();
-
-extern void Login(Request request,char *buf);
-void Register(Request request,char *buf);
-void Modify(Request request,char *buf);
-void Start(Request request,char *buf);
-void PushTable(Request request,char *buf);
-void Chess(Request request,char *buf);
-
-void Trans(char *buf,void *res,int len);
-
-
 typedef struct table{
     char board[15][15];
     char player0[20];
@@ -38,3 +21,16 @@ typedef struct answer{
 }Answer;
 
 Table tables[40];
+
+extern int Initialize_All_Account_Info();
+
+extern void Login(Request request,char *buf);
+extern void Register(Request request,char *buf);
+extern void Modify(Request request,char *buf);
+void Start(Request request,char *buf);
+void PushTable(Request request,char *buf);
+void Chess(Request request,char *buf);
+
+void Initialize_All_Table();
+void Trans(char *buf,void *res,int len);
+int CheckIfEnd(char (*board)[15],int row,int column);

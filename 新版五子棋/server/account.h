@@ -26,15 +26,13 @@ typedef struct answer{
     int num3;
 }Answer;
 
+static Head all_account_head = {.length = 0,.next = NULL};
+
+Node* Creat_Node(char *ac,char *psw,int w,int l);
 int Initialize_All_Account_Info();
+
 void Login(Request request,char *buf);
 void Register(Request request,char *buf);
 void Modify(Request request,char *buf);
-void Close_Account_System();
 
-void Trans(char *buf,void *res,int len);
-
-Node* Creat_Node(char *account,char *password,int win,int lose);
-int Traverse_All_Account_Info(Head);
-
-static Head all_account_head = {.length = 0,.next = NULL};
+extern void Trans(char *buf,void *res,int len);

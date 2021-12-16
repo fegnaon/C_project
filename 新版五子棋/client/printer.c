@@ -1,22 +1,23 @@
 #include <stdio.h>
+#include <string.h>
 #include "client.h"
 
 void PrintLoginInterface(){
    printf("\
-æ¬¢è¿æ¥åˆ°äº”å­æ£‹å°æ¸¸æˆ\n\
-1.ç™»å½•\n\
-2.æ³¨å†Œ\n\
-3.é€€å‡ºæ¸¸æˆ\n\
-è¯·é€‰æ‹©æ‚¨è¦è¿›è¡Œçš„æ“ä½œ:"); 
+»¶Ó­À´µ½Îå×ÓÆåĞ¡ÓÎÏ·\n\
+1.µÇÂ¼\n\
+2.×¢²á\n\
+3.ÍË³öÓÎÏ·\n\
+ÇëÑ¡ÔñÄúÒª½øĞĞµÄ²Ù×÷:"); 
 }
 
 void PrintMainMenu(){
     printf("\
-ä¸»èœå•\n\
-1.å¼€å§‹æ¸¸æˆ\n\
-2.ä¿®æ”¹å¯†ç \n\
-3.é€€å‡ºæ¸¸æˆ\n\
-è¯·é€‰æ‹©æ‚¨è¦è¿›è¡Œçš„æ“ä½œ:");
+Ö÷²Ëµ¥\n\
+1.¿ªÊ¼ÓÎÏ·\n\
+2.ĞŞ¸ÄÃÜÂë\n\
+3.ÍË³öÓÎÏ·\n\
+ÇëÑ¡ÔñÄúÒª½øĞĞµÄ²Ù×÷:");
 }
 
 void PrintTable(Table table)
@@ -31,9 +32,9 @@ void PrintTable(Table table)
         printf("\n");
     }
 
-    printf("å½“å‰ç©å®¶\nç©å®¶1:%s\nç©å®¶2:%s\n",table.player0,table.player1);
+    printf("µ±Ç°Íæ¼Ò\nÍæ¼Ò1:%s\nÍæ¼Ò2:%s\n",table.player0,table.player1);
     
     if (!strcmp(table.player1,"NO PLAYER")){
-        printf("ç©å®¶æœªåˆ°ï¼Œè¯·ç­‰å¾…");
+        printf("Íæ¼ÒÎ´µ½£¬ÇëµÈ´ı");
     }
 }

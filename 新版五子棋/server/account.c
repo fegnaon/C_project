@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <stdbool.h>
 #include "account.h"
 
 Node* Creat_Node(char *ac,char *psw,int w,int l)
@@ -21,7 +26,6 @@ int Initialize_All_Account_Info()
     FILE *fp;
     if(!(fp = fopen("account","r")))
     {
-        fclose(fp);
         fp = fopen("account","w");
         fclose(fp);
         fp = fopen("account","r");

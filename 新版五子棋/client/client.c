@@ -16,14 +16,14 @@ int main()
     WSAStartup(MAKEWORD(2,2),&wsaData);
     struct sockaddr_in servaddr;
     memset(&servaddr,0,sizeof(servaddr));
-    servaddr.sin_addr.s_addr = inet_addr("");
+    servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(6666);
     
     Request request;
     Accept accept;
-    int sbuf[64];
-    int lbuf[512];
+    char sbuf[64];
+    char lbuf[512];
 
     player.table_number = 0;
 
@@ -36,7 +36,7 @@ int main()
 
         if (choice == 1){
             request = PackLoginRequest();
-            trans(sbuf,&request,64);
+            Trans(sbuf,&request,64);
 
             SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
             connect(clifd,(struct sockaddr*)&servaddr,sizeof(servaddr));
@@ -48,19 +48,19 @@ int main()
 
             if (accept.num1 == 1){
                 LoadStatus(accept);
-                printf("ç™»å½•æˆåŠŸ!\n");
+                printf("µÇÂ¼³É¹¦!\n");
                 system("pause");
                 break;
             }
             else{
-                printf("ç™»å½•å¤±è´¥ï¼Œè´¦å·ä¸å­˜åœ¨æˆ–å¯†ç é”™è¯¯");
+                printf("µÇÂ¼Ê§°Ü£¬ÕËºÅ²»´æÔÚ»òÃÜÂë´íÎó");
                 system("pause");
                 continue;
             }
         }
         else if(choice == 2){
             request = PackRegisterRequest();
-            trans(sbuf,&request,64);
+            Trans(sbuf,&request,64);
 
             SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
             connect(clifd,(struct sockaddr*)&servaddr,sizeof(servaddr));
@@ -71,12 +71,12 @@ int main()
             accept = *(Accept*)sbuf;
 
             if(accept.num1 == 1){
-                printf("æ³¨å†ŒæˆåŠŸ!\n");
+                printf("×¢²á³É¹¦!\n");
                 system("pause");
-                break;
+                continue;
             }
             else{
-                printf("æ³¨å†Œå¤±è´¥ï¼Œè´¦å·å·²å­˜åœ¨");
+                printf("×¢²áÊ§°Ü£¬ÕËºÅÒÑ´æÔÚ");
                 system("pause");
                 continue;
             }
@@ -86,7 +86,7 @@ int main()
         }
     }
 
-//ä¸»èœå•
+//ä¸»èœå?
     while(true)
     {
         system("cls");
@@ -95,7 +95,7 @@ int main()
 
         if (choice == 1){
             request = PackStartRequest();
-            trans(sbuf,&request,64);
+            Trans(sbuf,&request,64);
 
             SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
             connect(clifd,(struct sockaddr*)&servaddr,sizeof(servaddr));
@@ -107,32 +107,41 @@ int main()
             
             if(accept.num1 == 1){
                 player.table_number = request.table_number;
-                printf("ä¸Šæ¡ŒæˆåŠŸ!\n");
+                printf("ÉÏ×À³É¹¦!\n");
                 system("pause");
 
-                //å¼€å§‹æ¸¸æˆ
+                //å¼€å§‹æ¸¸æˆ?
                 //æ¯ç§’é’Ÿæ‹‰å–ä¸€æ¬¡æ£‹æ¡Œï¼Œå¦‚æœåˆ°è¯¥è‡ªå·±ä¸‹äº†ï¼Œå°±ä¸‹æ£‹
                 while(true)
                 {
                     request = PackPullTableRequest();
-                    trans(sbuf,&request,64);
+                    Trans(sbuf,&request,64);
                     
                     SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
                     connect(clifd,(struct sockaddr*)&servaddr,sizeof(servaddr));
                     send(clifd,sbuf,64,0);
-                    recv(clifd,lbuf,64,0);
+                    recv(clifd,lbuf,512,0);
                     closesocket(clifd);
 
                     Table new_table = *(Table*)lbuf;
+                    system("cls");
                     PrintTable(new_table);
+
+                    if (new_table.turn == -2){
+                        system("cls");
+                        printf("%s %s\n",new_table.player0,new_table.player1);
+                        printf("ÄãÊäÁË!");
+                        system("pause");
+                        break;
+                    }
 
                     if (strcmp(new_table.player1,"NO PLAYER")){
                         if ((new_table.turn == 0 && (!strcmp(new_table.player0,player.account)))||(new_table.turn == 1 && (!strcmp(new_table.player1,player.account)))){
-                            //å¦‚æœåˆ°æœ¬æ–¹äº†ï¼Œå°±å‘é€ä¸€ä¸ªä¸‹æ£‹è¯·æ±‚
+                            //å¦‚æœåˆ°æœ¬æ–¹äº†ï¼Œå°±å‘é€ä¸€ä¸ªä¸‹æ£‹è¯·æ±?
                             while (true)
                             {
                                 request = PackChessRequest();
-                                trans(sbuf,&request,64);
+                                Trans(sbuf,&request,64);
 
                                 SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
                                 connect(clifd,(struct sockaddr*)&servaddr,sizeof(servaddr));
@@ -143,9 +152,12 @@ int main()
                                 accept = *(Accept*)sbuf;
 
                                 if (accept.num1 == 0){
-                                    if (accept.num2 == 1){
-                                        printf("ä¸‹æ£‹å¤±è´¥ï¼Œè¿™é‡Œå·²ç»æœ‰ä¸€ä¸ªæ£‹å­äº†");
-                                    }
+                                    printf("ÏÂÆåÊ§°Ü£¬ÕâÀïÒÑ¾­ÓĞÒ»¸öÆå×ÓÁË");
+                                }
+                                else if (accept.num1 == 2){
+                                    printf("ÄãÓ®ÁË!");
+                                    system("pause");
+                                    break;
                                 }
                                 else{
                                     break;
@@ -154,26 +166,22 @@ int main()
                         }
                     }
                     else{
-                        printf("å½“å‰æ¡Œä¸Šåªæœ‰æ‚¨ä¸€ä½ç©å®¶ï¼Œè¯·ç­‰å¾…...\n");
+                        printf("µ±Ç°×ÀÉÏÖ»ÓĞÄúÒ»Î»Íæ¼Ò£¬ÇëµÈ´ı...\n");
                     }
                     delay();
                 }
-
-
                 continue;
             }
             else{
-                printf("ä¸Šæ¡Œå¤±è´¥");
-                if (accept.num2 == 1){
-                    printf(",è¿™æ¡Œå·²ç»æ»¡äº†\n");
-                }
+                printf("ÉÏ×ÀÊ§°Ü");
+                printf(",Õâ×ÀÒÑ¾­ÂúÁË\n");
                 system("pause");
                 continue;
             }
         }
         else if(choice == 2){
             request = PackModifyRequest();
-            trans(sbuf,&request,64);
+            Trans(sbuf,&request,64);
 
             SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
             connect(clifd,(struct sockaddr*)&servaddr,sizeof(servaddr));
@@ -184,12 +192,12 @@ int main()
             accept = *(Accept*)sbuf;
 
             if(accept.num1 == 1){
-                printf("ä¿®æ”¹æˆåŠŸ!\n");
+                printf("ĞŞ¸Ä³É¹¦!\n");
                 system("pause");
-                break;
+                continue;
             }
             else{
-                printf("ä¿®æ”¹å¤±è´¥");
+                printf("ĞŞ¸ÄÊ§°Ü");
                 system("pause");
                 continue;
             }
@@ -204,10 +212,10 @@ Request PackLoginRequest()
 {
     Request request = {.type = 1};
 
-    printf("è¯·è¾“å…¥æ‚¨çš„è´¦å·:");
+    printf("ÇëÊäÈëÄúµÄÕËºÅ:");
     scanf("%16s",request.account);
     strncpy(player.account,request.account,16);
-    printf("è¯·è¾“å…¥æ‚¨çš„å¯†ç :");
+    printf("ÇëÊäÈëÄúµÄÃÜÂë:");
     scanf("%16s",request.password);
     request.table_number = 0;
     request.row = 0;
@@ -220,9 +228,9 @@ Request PackRegisterRequest()
 {
     Request request = {.type = 2};
 
-    printf("è¯·è¾“å…¥æ‚¨çš„è´¦å·(16ä¸ªå­—ç¬¦ä»¥å†…):");
+    printf("ÇëÊäÈëÄúµÄÕËºÅ(16¸ö×Ö·ûÒÔÄÚ):");
     scanf("%16s",request.account);
-    printf("è¯·è¾“å…¥æ‚¨çš„å¯†ç (16ä¸ªå­—ç¬¦ä»¥å†…):");
+    printf("ÇëÊäÈëÄúµÄÃÜÂë(16¸ö×Ö·ûÒÔÄÚ):");
     scanf("%16s",request.password);
     request.table_number = 0;
     request.row = 0;
@@ -236,7 +244,7 @@ Request PackModifyRequest()
     Request request = {.type = 3};
     strncpy(request.account,player.account,16);
 
-    printf("è¯·è¾“å…¥æ‚¨çš„æ–°å¯†ç :");
+    printf("ÇëÊäÈëÄúµÄĞÂÃÜÂë:");
     scanf("%16s",request.password);
     request.table_number = 0;
     request.row = 0;
@@ -252,13 +260,13 @@ Request PackStartRequest()
 
     while(1)
     {
-        printf("è¯·è¾“å…¥æ‚¨è¦é€‰æ‹©çš„æ¡Œå·(1-40):");
-        scanf("%d",request.table_number);
+        printf("ÇëÊäÈëÄúÒªÑ¡ÔñµÄ×ÀºÅ(1-40):");
+        scanf("%d",&(request.table_number));
         if (request.table_number <= 0){
-            printf("æ¡Œå·å¿…é¡»å¤§äº0!");
+            printf("×ÀºÅ±ØĞë´óÓÚ0!");
         }
         else if (request.table_number > 40){
-            printf("æ¡Œå·å¿…é¡»å°äº100!");
+            printf("×ÀºÅ±ØĞëĞ¡ÓÚ100!");
         }
         else{
             break;
@@ -284,10 +292,10 @@ Request PackChessRequest()
     request.table_number = player.table_number;
     while (1)
     {
-        printf("è½®åˆ°ä½ ä¸‹æ£‹äº†ï¼Œè¯·è¾“å…¥ä¸‹æ£‹çš„åæ ‡:");
+        printf("ÂÖµ½ÄãÏÂÆåÁË£¬ÇëÊäÈëÏÂÆåµÄ×ø±ê:");
         scanf("%d %d",&(request.row),&(request.column));
         if (request.row > 15 || request.row <= 0 || request.column > 15 || request.column <= 0){
-            printf("è¶…å‡ºæ£‹ç›˜èŒƒå›´!n");
+            printf("³¬³öÆåÅÌ·¶Î§!\n");
         }
         else{
             break;

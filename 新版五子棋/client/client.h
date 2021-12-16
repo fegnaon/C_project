@@ -1,18 +1,3 @@
-Request PackLoginRequest();
-Request PackRegisterRequest();
-Request PackModifyRequest();
-Request PackStartRequest();
-Request PackPullTableRequest();
-Request PackChessRequest();
-
-void Trans(char *buf,void *res,int len);
-void LoadStatus(Accept accept);
-void delay();
-
-extern void PrintLoginInterface();
-extern void PrintMainMenu();
-extern void PrintTable(Table table);
-
 typedef struct status{
     char account[20];
     int table_number;
@@ -42,6 +27,19 @@ typedef struct accept{
     int num3;
 }Accept;
 
-
-
 Status player;
+
+extern void PrintMainMenu();
+extern void PrintLoginInterface();
+extern void PrintTable(Table table);
+
+Request PackLoginRequest();
+Request PackRegisterRequest();
+Request PackModifyRequest();
+Request PackStartRequest();
+Request PackPullTableRequest();
+Request PackChessRequest();
+
+void Trans(char *buf,void *res,int len);
+void LoadStatus(Accept accept);
+void delay();
