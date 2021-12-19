@@ -11,6 +11,30 @@
 
 static char PlayerOnline[100][20];
 
+void ShowPlayerOnline(){
+    printf("当前在线玩家:\n");
+    for (int i = 0;i < 100;i ++){
+        if (strcmp(PlayerOnline[i],"NULL")){
+            printf("player %d : %s\n",i,PlayerOnline[i]);
+        }
+    }
+}
+
+int ShowAllAccount()
+{
+    Node *current = all_account_head.next;
+
+    printf("所有玩家的账号信息:\n");
+    printf("现在一共有 %d 个账号\n",all_account_head.length);
+
+    for (int i = 0;i < all_account_head.length;i ++)
+    {
+        printf("账户%d: 账户名:%s 密码:%s 胜:%d 负:%d",i+1,current->account,current->password,current->win,current->lose);
+        current = current->next;
+        printf("\n");
+    }
+}
+
 Node* Creat_Node(char *ac,char *psw,int w,int l)
 {
     Node *node = (Node*)malloc(sizeof(Node));

@@ -32,7 +32,7 @@ int main()
     {   
         system("cls");
         PrintLoginInterface();
-        scanf("%d",&choice);
+        scanf("%10d",&choice);
 
         if (choice == 1){
             request = PackLoginRequest();
@@ -91,6 +91,10 @@ int main()
         else if(choice == 3){
             exit(0);
         }
+        else{
+            printf("你输入的啥啊\n");
+            system("pause");
+        }
     }
 
 //主菜单
@@ -98,7 +102,7 @@ int main()
     {
         system("cls");
         PrintMainMenu();
-        scanf("%d",&choice);
+        scanf("%10d",&choice);
 
         if (choice == 1){
             request = PackStartRequest();
@@ -219,6 +223,10 @@ int main()
             send(clifd,sbuf,64,0);
             closesocket(clifd);
             exit(0);
+        }
+        else{
+            printf("你输入的啥啊\n");
+            system("pause");
         }
     }
 }

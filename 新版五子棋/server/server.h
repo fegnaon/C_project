@@ -24,6 +24,8 @@ Table tables[40];
 
 extern int Initialize_All_Account_Info();
 extern void SaveAccountData();
+extern void ShowPlayerOnline();
+extern int ShowAllAccount();
 
 extern void Login(Request request,char *buf);
 extern void Register(Request request,char *buf);

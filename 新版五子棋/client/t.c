@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "ai.h"
 
-#define TYPENUM 43
+#define TYPENUM 42
 
 Root root;
 int AllSonType[43] = {
@@ -29,7 +29,7 @@ int AllType[TYPENUM] = {212,2112,21112,211112,2111112,
 31113,313113,311313,313313,
 311112,211113,3113112,2113113,3131112,2111313,
 311113,
-3111113,3111112,2111113,2111112};
+3111113,3111112,2111113};
 
 int TypeVal(int type);
 int CalculateGrade(char (*board)[15],char mpiece);
@@ -55,15 +55,6 @@ int CalculateLineGrade(char *line,char piece,int len,int ifstart)
     }
 
     int i,j;
-    for (i = 0,j = 0;i < len;i ++){
-        if (line[i] == '.'){
-            j ++;
-        }
-    }
-    if (j == len){
-        return 0;
-    }
-
     int ifinson = 0,ifintype = 0;
     int type = 0;
     int tag = 0,last = 0;
@@ -74,9 +65,9 @@ int CalculateLineGrade(char *line,char piece,int len,int ifstart)
     for (i = 0;i < len;i ++){
         int a = (line[i] != '.')?((line[i] == piece)?1:2):3;
         type = type * 10 + a;
-        // // if (TypeVal(type)!=0){
-        // printf("type = %d,last = %d\n",type,last);
-        // // }
+        if (TypeVal(type)!=0){
+        printf("type = %d,last = %d\n",type,last);
+        }
         for (j = 0;j < 43;j ++){
             if (AllSonType[j] == type){
                 ifinson = 1;
@@ -111,9 +102,9 @@ int CalculateLineGrade(char *line,char piece,int len,int ifstart)
             }
         }
     }
-    // if (TypeVal(type)!=0){
-    // printf("%d %d\n",type,TypeVal(type));
-    // }
+    if (TypeVal(type)!=0){
+    printf("%d %d\n",type,TypeVal(type));
+    }
     return TypeVal(type) + CalculateLineGrade(line+1,piece,len-1,0);
 }
 
@@ -333,7 +324,7 @@ void Game(int* maxi,int* maxj,char (*board)[15],char mpiece,char epiece)
     int max = 1<<31,min = (1<<31)-1;
     int leafgrade,branchgrade;
     int init = 0;
-    int choice[225] = {},cnt = 0;
+    int choice;
 
     for (step1 = 0;step1 < 225;step1 ++)
     {
@@ -356,23 +347,23 @@ void Game(int* maxi,int* maxj,char (*board)[15],char mpiece,char epiece)
 
                 board[step3/15][step3%15] = mpiece;
                 leafgrade = CalculateGrade(board,mpiece) - CalculateGrade(board,epiece);
-                // Print_Board(board);
-                // printf("分数:%d\n",leafgrade);
+                Print_Board(board);
+                printf("分数:%d\n",leafgrade);
                 board[step3/15][step3%15] = '.';
                 if (init == 1){
                     if (leafgrade <= lowerbound){
-                        // printf("剪!!");
+                        printf("剪!!");
                         skip = 1;
                         break;
                     }
                     else{
-                        if (leafgrade < branchgrade){
-                            branchgrade = leafgrade;
+                        if (leafgrade < min){
+                            min = leafgrade;
                         }
                     }
                 }
                 else{
-                    if (leafgrade < branchgrade){
+                    if (leafgrade <= branchgrade){
                         branchgrade = leafgrade;
                     }
                 }
@@ -390,34 +381,21 @@ void Game(int* maxi,int* maxj,char (*board)[15],char mpiece,char epiece)
                     continue;
                 }
                 else{
-                    if (branchgrade != (1<<31)-1){
-                        lowerbound = branchgrade;
-                    }
+                    lowerbound = branchgrade;
                 }
             }
         }
-        printf("step %d val = %d\n",step1,lowerbound);
         board[step1/15][step1%15] = '.';
-        if (lowerbound > max){
+        if (lowerbound >= max){
             max = lowerbound;
-            cnt = 0;
-            choice[cnt] = step1;
+            choice = step1;
         }
-        if (lowerbound == max){
-            max = lowerbound;
-            if (cnt != 224){
-                cnt ++;
-            }
-            choice[cnt] = step1;
-        }
-        printf("step%d finished!\n",step1);
+        printf("\nstep%d finished!\n",step1);
     }
 
-    int re = rand()%cnt;
-    *maxi = re/15;
-    *maxj = re%15;
+    *maxi = choice/15;
+    *maxj = choice%15;
     board[*maxi][*maxj] = mpiece;
-    printf("cnt=%d\n",cnt);
 }
 
 void oldGame(int* maxi,int* maxj,char (*board)[15],char mpiece,char epiece)
@@ -453,7 +431,7 @@ void oldGame(int* maxi,int* maxj,char (*board)[15],char mpiece,char epiece)
                         {   
                             root.branches[cur1]->leaves[cur2]->val = 1;
                             board[k][l] = epiece;
-                            root.branches[cur1]->leaves[cur2]->grade = CalculateGrade(board,mpiece) - CalculateGrade(board,epiece)*4;
+                            root.branches[cur1]->leaves[cur2]->grade = CalculateGrade(board,mpiece) - CalculateGrade(board,epiece);
                             // Print_Board(board);
                             // printf("分数:%d\n",root.branches[cur1]->leaves[cur2]->grade);  
                             
@@ -728,7 +706,7 @@ int CheckIfEnd(char (*board)[15],int row,int column)
 
 int main()
 {   
-    InitializeTree();
+    // InitializeTree();
     time_t a;
     srand(time(&a));
     int row,column;
@@ -747,12 +725,13 @@ int main()
     // // system("cls");
     // Print_Board(board);
 
-    // board[2][0] = '1';
-    // board[2][1] = '2';
-    // board[2][2] = '1';
-    // board[5][4] = '2';
-    // Print_Board(board);
-    // printf("grade = %d\n",CalculateGrade(board,'2'));
+    board[0][0] = '1';
+    board[0][1] = '1';
+    board[5][7] = '2';
+    board[8][7] = '2';
+    board[8][8] = '1';
+    Print_Board(board);
+    printf("grade = %d\n",CalculateGrade(board,'2'));
 
     // for (int i = 0;i < 15;i ++)
     // {
@@ -765,83 +744,81 @@ int main()
     //     }
     // }
 
-    int turn = 1;
-    while (1)
-    {   
-        board[8][8] = 'O';
-        if (turn == 1){
-            // while(1)
-            // {
-            //     printf("玩家下棋!:\n");
-            //     scanf("%d %d",&row,&column);
-            //     if (board[row-1][column-1] != '.'){
-            //         printf("已经有一个棋子了\n");
-            //     }else{break;}
-            // }
-            // board[row-1][column-1] = '2';
-            // if (CheckIfEnd(board,row-1,column-1)){printf("玩家胜利!!");break;}
-            // // system("cls");
-            // Print_Board(board);
-            printf("AI2下棋!\n");
-            oldGame(&row,&column,board,'X','O');
-            // board[row][column] = '1';
-            // system("cls");
-            Print_Board(board);
-            // // scanf("%d",&turn);
-            if (CheckIfEnd(board,row,column)){printf("AI2胜利!!");break;}
-        }
-        else{
-            printf("AI1下棋!\n");
-            oldGame(&row,&column,board,'O','X');
-            // board[row][column] = '1';
-            // system("cls");
-            Print_Board(board);
-            if (CheckIfEnd(board,row,column)){printf("AI1胜利!!");break;}
-        }
-        turn = (turn + 1)%2;
-    }
+    // int turn = 1;
+    // while (1)
+    // {   
+    //     board[8][8] = '1';
+    //     if (turn == 1){
+    //         while(1)
+    //         {
+    //             printf("玩家下棋!:\n");
+    //             scanf("%d %d",&row,&column);
+    //             if (board[row-1][column-1] != '.'){
+    //                 printf("已经有一个棋子了\n");
+    //             }else{break;}
+    //         }
+    //         board[row-1][column-1] = '2';
+    //         if (CheckIfEnd(board,row-1,column-1)){printf("玩家胜利!!");break;}
+    //         // system("cls");
+    //         Print_Board(board);
+    //         // printf("AI2下棋!\n");
+    //         // Game(&row,&column,board,'2','1');
+    //         // // board[row][column] = '1';
+    //         // if (CheckIfEnd(board,row,column)){printf("AI2胜利!!");break;}
+    //         // // system("cls");
+    //         // Print_Board(board);
+    //     }
+    //     else{
+    //         printf("AI1下棋!\n");
+    //         Game(&row,&column,board,'1','2');
+    //         // board[row][column] = '1';
+    //         if (CheckIfEnd(board,row,column)){printf("AI1胜利!!");break;}
+    //         // system("cls");
+    //         Print_Board(board);
+    //     }
+    //     turn = (turn + 1)%2;
+    // }
 
 }
 
 int TypeVal(int type){
     switch (type){
-    case 3111113:return 100000;
-    case 2111112:return 100000;
-    case 3111112:return 100000;
-    case 2111113:return 100000;
+    case 3111113:return 10000;
+    case 3111112:return 10000;
+    case 2111113:return 10000;
     case 311113:return 8000;
-    case 311112:return 4000;
-    case 211113:return 4000;
-    case 3113112:return 4000;
-    case 2113113:return 4000;
-    case 3131112:return 4000;
-    case 2111313:return 4000;
-    case 31113:return 4000;
-    case 313313:return 80;
-    case 313113:return 4000;
-    case 311313:return 4000;
-    case 31112:return 1500;
-    case 21113:return 1500;
-    case 313112:return 1500;
-    case 211313:return 1500;
-    case 311312:return 1500;
-    case 213110:return 1500;
-    case 3113313:return 1500;
-    case 3133113:return 1500;
-    case 3131313:return 1500;
-    case 2311132:return 1500;
-    case 3113:return 1000;
-    case 31313:return 1000;
-    case 3112:return 1000;
-    case 2113:return 1000;
-    case 31312:return 1000;
-    case 21313:return 1000;
-    case 313312:return 200;
-    case 213313:return 200;
-    case 3133313:return 200;
-    case 313:return 40;
-    case 312:return 20;
-    case 213:return 20;
+    case 311112:return 60;
+    case 211113:return 60;
+    case 3113112:return 60;
+    case 2113113:return 60;
+    case 3131112:return 60;
+    case 2111313:return 60;
+    case 31113:return 80;
+    case 313313:return 5;
+    case 313113:return 30;
+    case 311313:return 30;
+    case 31112:return 15;
+    case 21113:return 15;
+    case 313112:return 15;
+    case 211313:return 15;
+    case 311312:return 15;
+    case 213110:return 15;
+    case 3113313:return 15;
+    case 3133113:return 15;
+    case 3131313:return 15;
+    case 2311132:return 15;
+    case 3113:return 10;
+    case 31313:return 10;
+    case 3112:return 5;
+    case 2113:return 5;
+    case 31312:return 5;
+    case 21313:return 5;
+    case 313312:return 0;
+    case 213313:return 0;
+    case 3133313:return 5;
+    case 313:return 4;
+    case 312:return 1;
+    case 213:return 1;
     default:return 0;
 }
 }

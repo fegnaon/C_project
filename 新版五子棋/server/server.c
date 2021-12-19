@@ -20,6 +20,12 @@ void* CloseServer(void *a)
             SaveAccountData();
             exit(0);
         }
+        if (!strcmp(command,"player")){
+            ShowPlayerOnline();
+        }
+        if (!strcmp(command,"account")){
+            ShowAllAccount();
+        }
     }
 }
 
@@ -297,6 +303,66 @@ int CheckIfEnd(char (*board)[15],int row,int column)
         
         cnt = 0;
         column ++;
+    }
+
+    column = 0;
+    while(column < 15)
+    {   
+        row = 0;
+        int check_column = column;
+
+        while(check_column > -1)
+        {   
+            if (board[row][check_column] == piece)
+            {
+                cnt ++;
+            }
+            else
+            {
+                cnt = 0;
+            }
+
+            if (cnt == 5)
+            {
+                return 1;
+            }
+
+            row ++;
+            check_column --;
+        }
+        
+        cnt = 0;
+        column ++;
+    }
+
+    row = 0;
+    while(row != 15)
+    {   
+        column = 0;
+        int check_row = row;
+
+        while(check_row < 15)
+        {
+            if (board[check_row][column] == piece)
+            {
+                cnt ++;
+            }
+            else
+            {
+                cnt = 0;
+            }
+
+            if (cnt == 5)
+            {
+                return 1;
+            }
+
+            check_row ++;
+            column --;
+        }
+        
+        cnt = 0;
+        row ++;
     }
     
     return 0;
