@@ -41,6 +41,9 @@ extern Request PackPullTableRequest();
 extern Request PackChessRequest();
 extern Request PackExitRequest();
 
+extern void Initialize();
+extern void SingleGame();
+
 void Trans(char *buf,void *res,int len);
 void LoadStatus(Accept accept);
 void delay();

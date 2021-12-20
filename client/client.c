@@ -27,6 +27,8 @@ int main()
 
     player.table_number = 0;
 
+    Initialize();
+
 //≥ı º≤Àµ•
     while(true)
     {   
@@ -89,6 +91,9 @@ int main()
             }
         }
         else if(choice == 3){
+            SingleGame();
+        }
+        else if(choice == 4){
             exit(0);
         }
         else{
@@ -191,7 +196,10 @@ int main()
                 continue;
             }
         }
-        else if(choice == 2){
+        else if (choice == 2){
+            SingleGame();
+        }
+        else if(choice == 3){
             request = PackModifyRequest();
             Trans(sbuf,&request,64);
 
@@ -214,7 +222,7 @@ int main()
                 continue;
             }
         }
-        else if(choice == 3){
+        else if(choice == 4){
             request = PackExitRequest();
             Trans(sbuf,&request,64);
 
