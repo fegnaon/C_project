@@ -7,7 +7,6 @@ Request PackLoginRequest(char *account,char *password)
 {
     Request request = {.type = 1};
 
-    strncpy(player.account,account,16);
     strncpy(request.account,account,16);
     strncpy(request.password,password,16);
     request.table_number = 0;

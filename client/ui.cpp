@@ -7,6 +7,7 @@
 void InitializeUI()
 {
     initgraph(800,600);
+    setcaption("五子棋小游戏");
     setbkcolor(WHITE);
 }
 
@@ -41,7 +42,7 @@ int LoginInterface(char *ac,char *psw,int tip)
     outtextxy(330,350,"退出游戏");
     delay_ms(1);
 
-    if (tip == 1 || tip == 4){
+    if (tip == 1){
         delay_ms(1000);
         printf("hhhhhh\n");
         return 0;
@@ -49,7 +50,7 @@ int LoginInterface(char *ac,char *psw,int tip)
 
     int x,y,b;
     int ifac = 0,ifpsw = 0,ifsingle = 0,aclen = 0,pswlen = 0;
-    char psws[20],input;
+    char spsw[20],input;
     for(;is_run();delay_fps(60))
     {
         while(mousemsg())
@@ -57,8 +58,8 @@ int LoginInterface(char *ac,char *psw,int tip)
             msg = getmouse();
         }
 
-        xyprintf(0, 0, "x = %10d  y = %10d",
-        msg.x, msg.y);
+        // xyprintf(0, 0, "x = %10d  y = %10d",
+        // msg.x, msg.y);
 
         if ((int)msg.is_left() == 1 && (int)msg.is_down() == 1){
             ifac = ifpsw = 0;
@@ -116,13 +117,16 @@ int LoginInterface(char *ac,char *psw,int tip)
                         outtextxy(300,195,"                ");
                         pswlen --;
                         psw[pswlen] = '\0';
+                        spsw[pswlen] = '\0';
                     }
                     else{
                         psw[pswlen] = input;
+                        spsw[pswlen] = '*';
                         psw[pswlen+1] = '\0';
+                        spsw[pswlen+1] = '\0';
                         pswlen ++;
                     }
-                    xyprintf(300,195,psw);
+                    xyprintf(300,195,spsw);
                 }
             }
         }
@@ -185,11 +189,13 @@ void GameInterface(Table table,int myturn,int* i,int* j)
     if (table.turn >= 0){
         strcat(turntip,table.turn?table.player1:table.player0);
         strcat(turntip,"下棋了");
+        outtextxy(500,200,turntip);
     }
     else{
-        strcpy(turntip,"玩家未满,游戏暂未开始,请等待");
+        outtextxy(500,200,"玩家未满");
+        outtextxy(500,250,"游戏暂未开始");
+        outtextxy(500,300,"请等待...");
     }
-    outtextxy(500,200,turntip);
 
     delay_ms(1);
     mouse_msg msg = {0};
@@ -259,8 +265,8 @@ int MainMenuInterface(int mode)
             msg = getmouse();
         }
 
-        xyprintf(0, 0, "x = %10d  y = %10d",
-        msg.x, msg.y);
+        // xyprintf(0, 0, "x = %10d  y = %10d",
+        // msg.x, msg.y);
 
         if ((int)msg.is_left() == 1 && (int)msg.is_down() == 1){
             ifnumber = 0;
@@ -344,8 +350,8 @@ int ModifyInterface(char* psw)
             msg = getmouse();
         }
 
-        xyprintf(0, 0, "x = %10d  y = %10d",
-        msg.x, msg.y);
+        // xyprintf(0, 0, "x = %10d  y = %10d",
+        // msg.x, msg.y);
 
         if ((int)msg.is_left() == 1 && (int)msg.is_down() == 1){
             ifnpw = ifcnpw = 0;

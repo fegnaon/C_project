@@ -29,7 +29,7 @@ int ShowAllAccount()
 
     for (int i = 0;i < all_account_head.length;i ++)
     {
-        printf("账户%d: 账户�?:%s 密码:%s �?:%d �?:%d",i+1,current->account,current->password,current->win,current->lose);
+        printf("账户%d: 账户:%s 密码:%s 胜:%d 负:%d",i+1,current->account,current->password,current->win,current->lose);
         current = current->next;
         printf("\n");
     }
@@ -99,9 +99,14 @@ void Login(Request request,char *buf)
 {
     Node *player = all_account_head.next;
     Answer answer = {0};
+    if (!player){
+        answer.num1 = false;
+        Trans(buf,&answer,64);
+        return;
+    }
     while(strcmp(player->account,request.account))
     {
-        if (!player){
+        if (!player->next){
             answer.num1 = false;
             Trans(buf,&answer,64);
             return;
@@ -214,7 +219,7 @@ void Count(char *player0,char *player1,int turn)
                 player->win += 1;
             }
             else{
-                player->lose -= 1;
+                player->lose += 1;
             }
         }
         if (!strcmp(player->account,player1)){
@@ -223,7 +228,7 @@ void Count(char *player0,char *player1,int turn)
                 player->win += 1;
             }
             else{
-                player->lose -= 1;
+                player->lose += 1;
             }
         }
         if (i == 2){

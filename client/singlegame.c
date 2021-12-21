@@ -29,23 +29,25 @@ void SingleGame(int turn)
             table.board[row][column] = '0';
             table.turn = (table.turn+1)%2;
             if (CheckIfEnd(table.board,row,column)){
-                table.turn = -2;
+                table.turn = -3;
+                GameInterface(table,0,&row,&column);
                 break;
             }
-            GameInterface(table,&row,&column);
+            GameInterface(table,0,&row,&column);
         }
         else{
-            Game(&row,&column,0,table.board,'1','0');
+            Game(&row,&column,table.board,'1','0');
             table.board[row][column] = '1';
             table.turn = (table.turn+1)%2;
             if (CheckIfEnd(table.board,row,column)){
-                table.turn = -1;
+                table.turn = -4;
+                GameInterface(table,0,&row,&column);
                 break;
             }
         }
     }
 
-    GameInterface(table,&row,&column);
+    GameInterface(table,0,&row,&column);
 
     return;
 }

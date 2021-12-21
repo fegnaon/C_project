@@ -20,6 +20,7 @@ int main()
     struct sockaddr_in servaddr;
     memset(&servaddr,0,sizeof(servaddr));
     servaddr.sin_addr.s_addr = inet_addr("1.14.96.36");
+    // servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(6666);
     
@@ -56,6 +57,7 @@ int main()
             accept = *(Accept*)sbuf;
 
             if (accept.num1 == 1){//µÇÂ¼³É¹¦
+                strncpy(player.account,ac,16);
                 LoadStatus(accept);
                 tip = 1;
                 LoginInterface(ac,psw,tip);
@@ -88,8 +90,7 @@ int main()
                 strcpy(player.account,ac);
                 LoadStatus(accept);
                 tip = 4;
-                LoginInterface(ac,psw,tip);
-                break;
+                continue;
             }
             else{//×¢²áÊ§°Ü
                 tip = 5;
@@ -157,12 +158,18 @@ int main()
                         recv(clifd,sbuf,64,0);
                         closesocket(clifd);
                     }
-                    GameInterface(new_table,myturn,&row,&column);
-                    if (new_table.turn == -4 || new_table.turn == -3){
-                        break;;
+                    else{
+                        GameInterface(new_table,myturn,&row,&column);
+                        Sleep(200);
                     }
-
-                    Sleep(500);
+                    if (new_table.turn == -4){
+                        player.lose += 1;
+                        break;
+                    }
+                    if (new_table.turn == -3){
+                        player.win += 1;
+                        break;
+                    }
                 }
                 continue;
             }

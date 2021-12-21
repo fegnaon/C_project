@@ -127,7 +127,7 @@ void Start(Request request,char *buf)
         strncpy(tables[table_number].player0,request.account,16);
         answer.num2 = 0;
     }
-    else if(tables[table_number] == -1){//玩家2
+    else if(tables[table_number].turn == -1){//玩家2
         tables[table_number].turn = 0;
         strncpy(tables[table_number].player1,request.account,16);
         answer.num2 = 1;
@@ -144,17 +144,17 @@ void Start(Request request,char *buf)
 
 void PushTable(Request request,char *buf)
 {   
-    int table_number = request.table_number-1;
+    int table_number = request.table_number;
     Table table = tables[table_number];
     if (tables[table_number].turn == -4){
-        tables[table_number].turn += 1;
+        tables[table_number].turn = -3;
     }
-    if (tables[table_number].turn == -3){
-        tables[table_number].turn += 1;
+    else if (tables[table_number].turn == -3){
+        tables[table_number].turn = -2;
         int i,j;
         for (i = 0;i < 15;i ++)
         {
-            fpr (j = 0;j < 15;j ++)
+            for (j = 0;j < 15;j ++)
             {
                 tables[table_number].board[i][j] = '.';
             }
@@ -176,7 +176,7 @@ void Chess(Request request,char *buf)
     if (tables[table_number].turn == 0){
         tables[table_number].board[row][column] = '0';
     }
-    else if(talbes[table_number].turn == 1){
+    else if(tables[table_number].turn == 1){
         tables[table_number].board[row][column] = '1';
     }
     if (CheckIfEnd(tables[table_number].board,row,column)){
