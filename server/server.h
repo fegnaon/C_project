@@ -20,7 +20,7 @@ typedef struct answer{
     int num3;
 }Answer;
 
-Table tables[40];
+Table tables[100];
 
 extern int Initialize_All_Account_Info();
 extern void SaveAccountData();

@@ -100,7 +100,7 @@ int main()
 void Initialize_All_Table()
 {
     int i,j,k;
-    for (i = 0;i < 40;i ++)
+    for (i = 0;i < 100;i ++)
     {   
         for (j = 0;j < 15;j ++)
         {   
