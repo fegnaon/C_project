@@ -66,7 +66,7 @@ int LoginInterface(char *ac,char *psw,int tip)
             if (msg.x>=500&&msg.x<=550&&msg.y>=150&&msg.y<=175){//µÇÂ¼
                 return 1;
             }
-            if (msg.x>=500&&msg.x<=550&&msg.y>=150&&msg.y<=1750){//×¢²á
+            if (msg.x>=500&&msg.x<=550&&msg.y>=200&&msg.y<=225){//×¢²á
                 return 2;
             }
             if (msg.x>=330&&msg.x<=430&&msg.y>=300&&msg.y<=320){//µ¥ÈËÓÎÏ·
