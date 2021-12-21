@@ -76,7 +76,7 @@ int LoginInterface(char *ac,char *psw,int tip)
             if (ifsingle == 1&&msg.x>=460&&msg.x<=510&&msg.y>=300&&msg.y<=320){//单人游戏先手
                 return 30;
             }
-            if (ifsingle == 1&&msg.x>=520&&msg.x<=570&&msg.y>=300&&msg.y<=320){//单人游戏先手
+            if (ifsingle == 1&&msg.x>=520&&msg.x<=570&&msg.y>=300&&msg.y<=320){//单人游戏后手
                 return 31;
             }
             if (msg.x>=330&&msg.x<=430&&msg.y>=350&&msg.y<=370){//退出游戏
