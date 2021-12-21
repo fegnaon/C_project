@@ -1,73 +1,51 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
-#include "client.h"
 #include "singlegame.h"
 
 
-void SingleGame()
-{      
-    char board[15][15];
+void SingleGame(int turn)
+{
+    Table table;
     int i,j;
 
     for (i = 0;i < 15;i ++)
     {   
         for (j = 0;j < 15;j ++)
         {
-            board[i][j] = '.';
+            table.board[i][j] = '.';
+        }
+    }
+    strcpy(table.player0,"你");
+    strcpy(table.player1,"电脑");
+    table.turn = turn;
+
+    int row,column;
+    while(true)
+    {
+        if (table.turn == 0){
+            GameInterface(table,0,&row,&column);
+            table.board[row][column] = '0';
+            table.turn = (table.turn+1)%2;
+            if (CheckIfEnd(table.board,row,column)){
+                table.turn = -2;
+                break;
+            }
+            GameInterface(table,&row,&column);
+        }
+        else{
+            Game(&row,&column,0,table.board,'1','0');
+            table.board[row][column] = '1';
+            table.turn = (table.turn+1)%2;
+            if (CheckIfEnd(table.board,row,column)){
+                table.turn = -1;
+                break;
+            }
         }
     }
 
-    int turn;
-    printf("\
-请选择先手还是后手\n\
-1.先手\n\
-2.后手\n");
-    scanf("%d",&turn);
-    turn --;
-    
-    while (true)
-    {   
-        if (turn == 0){
-            while(true)
-            {   
-                system("cls");
-                printf("该你下棋了!\n");
-                PrintBoard(board);
-                printf("请输入要下棋的坐标:");
-                scanf("%d %d",&i,&j);
-                i --;j --;
-                if (board[i][j] != '.'){
-                    printf("已经有一个棋子了\n");
-                    continue;
-                }
-                board[i][j] = 'X';
-                break;
-            }
-            if (CheckIfEnd(board,i,j)){
-                system("cls");
-                PrintBoard(board);
-                printf("你赢了!!\n");
-                break;
-            }
-        }
-        else{
-            system("cls");
-            printf("AI下棋!\n");
-            PrintBoard(board);
-            Game(&i,&j,board,'O','X');
-            // board[row][column] = '1';
-            // system("cls");
-            if (CheckIfEnd(board,i,j)){
-                system("cls");
-                PrintBoard(board);
-                printf("电脑赢了!!\n");
-                break;
-            }
-        }
-        turn = (turn+1)%2;
-    }
-    system("pause");
+    GameInterface(table,&row,&column);
 
     return;
 }

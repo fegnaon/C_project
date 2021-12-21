@@ -120,19 +120,22 @@ void Start(Request request,char *buf)
 {
 //先检查是否桌上已经满了
     Answer answer = {0};
-    int table_number = request.table_number-1;
-    if (strcmp(tables[table_number].player1,"NO PLAYER")){
+    int table_number = request.table_number;
+
+    if (tables[table_number].turn == -2){//玩家1
+        tables[table_number].turn = -1;
+        strncpy(tables[table_number].player0,request.account,16);
+        answer.num2 = 0;
+    }
+    else if(tables[table_number] == -1){//玩家2
+        tables[table_number].turn = 0;
+        strncpy(tables[table_number].player1,request.account,16);
+        answer.num2 = 1;
+    }
+    else{//桌上满了
         answer.num1 = false;
         Trans(buf,&answer,64);
         return;
-    }
-    if (!strcmp(tables[table_number].player0,"NO PLAYER")){
-        tables[table_number].turn = -1;
-        strncpy(tables[table_number].player0,request.account,16);
-    }
-    else{
-        strncpy(tables[table_number].player1,request.account,16);
-        tables[table_number].turn = 0;
     }
     answer.num1 = true;
     Trans(buf,&answer,64);
@@ -140,51 +143,50 @@ void Start(Request request,char *buf)
 }
 
 void PushTable(Request request,char *buf)
-{
-    Table table = tables[request.table_number-1];
-    Trans(buf,&table,512);
-    return;
-}
-
-void Chess(Request request,char *buf)
-{
-    int row = request.row-1;
-    int column = request.column-1;
+{   
     int table_number = request.table_number-1;
-    Answer answer = {0};
-
-    if (tables[table_number].board[row][column] != '.'){
-        answer.num1 = 0;
-        Trans(buf,&answer,64);
-        return;
+    Table table = tables[table_number];
+    if (tables[table_number].turn == -4){
+        tables[table_number].turn += 1;
     }
-    if (tables[table_number].turn == 0){
-        tables[table_number].board[row][column] = '0';
-    }
-    else{
-        tables[table_number].board[row][column] = '1';
-    }
-    if (CheckIfEnd(tables[table_number].board,row,column)){
-//保存战绩
-        Count(tables[table_number].player0,tables[table_number].player1,tables[table_number].turn);
-
-//重置棋盘
+    if (tables[table_number].turn == -3){
+        tables[table_number].turn += 1;
         int i,j;
         for (i = 0;i < 15;i ++)
         {
-            for (j = 0;j < 15;j ++)
+            fpr (j = 0;j < 15;j ++)
             {
                 tables[table_number].board[i][j] = '.';
             }
         }
         strcpy(tables[table_number].player0,"NO PLAYER");
         strcpy(tables[table_number].player1,"NO PLAYER");
-        tables[table_number].turn = -2;
-        answer.num1 = 2;
-        Trans(buf,&answer,64);
-        return;
     }
-    tables[table_number].turn = (tables[table_number].turn+1)%2;
+    Trans(buf,&table,512);
+    return;
+}
+
+void Chess(Request request,char *buf)
+{
+    int row = request.row;
+    int column = request.column;
+    int table_number = request.table_number;
+    Answer answer = {0};
+
+    if (tables[table_number].turn == 0){
+        tables[table_number].board[row][column] = '0';
+    }
+    else if(talbes[table_number].turn == 1){
+        tables[table_number].board[row][column] = '1';
+    }
+    if (CheckIfEnd(tables[table_number].board,row,column)){
+        //保存战绩
+        Count(tables[table_number].player0,tables[table_number].player1,tables[table_number].turn);
+        tables[table_number].turn = -4;
+    }
+    else{
+        tables[table_number].turn = (tables[table_number].turn+1)%2;
+    }
     answer.num1 = 1;
     Trans(buf,&answer,64);
     return;

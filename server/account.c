@@ -29,7 +29,7 @@ int ShowAllAccount()
 
     for (int i = 0;i < all_account_head.length;i ++)
     {
-        printf("账户%d: 账户名:%s 密码:%s 胜:%d 负:%d",i+1,current->account,current->password,current->win,current->lose);
+        printf("账户%d: 账户�?:%s 密码:%s �?:%d �?:%d",i+1,current->account,current->password,current->win,current->lose);
         current = current->next;
         printf("\n");
     }
@@ -168,6 +168,8 @@ void Register(Request request,char *buf)
         all_account_head.length ++;
     }
     answer.num1 = true;
+    answer.num2 = 0;
+    answer.num3 = 0;
     Trans(buf,&answer,64);
     return;
 }

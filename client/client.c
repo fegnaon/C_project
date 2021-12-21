@@ -3,10 +3,13 @@
 #include <WinSock2.h>
 #include <stdbool.h>
 #include <time.h>
+#include <windows.h>
 #include "client.h"
 #pragma comment (lib,"ws2_32.lib")
 
 #define BUFSIZE 64
+
+Status player;
 
 int main()
 {   
@@ -24,20 +27,24 @@ int main()
     Accept accept;
     char sbuf[64];
     char lbuf[512];
+    int tip = 0;
 
     player.table_number = 0;
 
-    Initialize();
+    InitializeAI();
+    InitializeUI();
 
 //初始菜单
+    start:
+    tip = 0;
     while(true)
     {   
-        system("cls");
-        PrintLoginInterface();
-        scanf("%10d",&choice);
+        char ac[20],psw[20];
+        choice = LoginInterface(ac,psw,tip);
+        printf("%d",choice);
 
         if (choice == 1){
-            request = PackLoginRequest();
+            request = PackLoginRequest(ac,psw);
             Trans(sbuf,&request,64);
 
             SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
@@ -48,27 +55,25 @@ int main()
 
             accept = *(Accept*)sbuf;
 
-            if (accept.num1 == 1){
+            if (accept.num1 == 1){//登录成功
                 LoadStatus(accept);
-                printf("登录成功!\n");
-                system("pause");
+                tip = 1;
+                LoginInterface(ac,psw,tip);
+                //打印登录成功
                 break;
             }
-            else{
-                
-                printf("登录失败");
+            else{//登录失败
                 if (accept.num1 == 0){
-                    printf(",账号不存在或密码错误\n");
+                    tip = 2;
                 }
                 else if (accept.num1 == 2){
-                    printf(",该账号已登录,不能重复登录\n");
+                    tip = 3;
                 }
-                system("pause");
                 continue;
             }
         }
         else if(choice == 2){
-            request = PackRegisterRequest();
+            request = PackRegisterRequest(ac,psw);
             Trans(sbuf,&request,64);
 
             SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
@@ -79,37 +84,34 @@ int main()
 
             accept = *(Accept*)sbuf;
 
-            if(accept.num1 == 1){
-                printf("注册成功!\n");
-                system("pause");
-                continue;
+            if(accept.num1 == 1){//注册成功
+                strcpy(player.account,ac);
+                LoadStatus(accept);
+                tip = 4;
+                LoginInterface(ac,psw,tip);
+                break;
             }
-            else{
-                printf("注册失败,该账号已存在\n");
-                system("pause");
+            else{//注册失败
+                tip = 5;
                 continue;
             }
         }
-        else if(choice == 3){
-            SingleGame();
+        else if(choice/10 == 3){
+            SingleGame(choice%10);
         }
         else if(choice == 4){
             exit(0);
-        }
-        else{
-            printf("你输入的啥啊\n");
-            system("pause");
         }
     }
 
 //主菜单
     while(true)
-    {
-        system("cls");
-        PrintMainMenu();
-        scanf("%10d",&choice);
+    {   
+        int number;
+        int mode = 0;
+        choice = MainMenuInterface(mode);
 
-        if (choice == 1){
+        if (choice == 1){//上桌请求
             request = PackStartRequest();
             Trans(sbuf,&request,64);
 
@@ -121,11 +123,15 @@ int main()
 
             accept = *(Accept*)sbuf;
             
-            if(accept.num1 == 1){
-                player.table_number = request.table_number;
-                printf("上桌成功!\n");
-                system("pause");
-
+            if(accept.num1 == 1){//上桌成功
+                int myturn;
+                int row,column;
+                if (accept.num2 == 0){
+                    myturn = 0;
+                }
+                else if (accept.num2 == 1){
+                    myturn = 1;
+                }
                 while(true)
                 {
                     request = PackPullTableRequest();
@@ -138,69 +144,43 @@ int main()
                     closesocket(clifd);
 
                     Table new_table = *(Table*)lbuf;
-                    system("cls");
-                    PrintTable(new_table);
 
-                    if (new_table.turn == -2){
-                        system("cls");
-                        printf("你输了!");
-                        player.lose += 1;
-                        system("pause");
-                        break;
+                    if (new_table.turn == myturn){
+                        GameInterface(new_table,myturn,&row,&column);
+
+                        request = PackChessRequest(row,column);
+                        Trans(sbuf,&request,64);
+
+                        SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
+                        connect(clifd,(struct sockaddr*)&servaddr,sizeof(servaddr));
+                        send(clifd,sbuf,64,0);
+                        recv(clifd,sbuf,64,0);
+                        closesocket(clifd);
+                    }
+                    GameInterface(new_table,myturn,&row,&column);
+                    if (new_table.turn == -4 || new_table.turn == -3){
+                        break;;
                     }
 
-                    if (strcmp(new_table.player1,"NO PLAYER")){
-                        if ((new_table.turn == 0 && (!strcmp(new_table.player0,player.account)))||(new_table.turn == 1 && (!strcmp(new_table.player1,player.account)))){
-                            while (true)
-                            {
-                                request = PackChessRequest();
-                                Trans(sbuf,&request,64);
-
-                                SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
-                                connect(clifd,(struct sockaddr*)&servaddr,sizeof(servaddr));
-                                send(clifd,sbuf,64,0);
-                                recv(clifd,sbuf,64,0);
-                                closesocket(clifd);
-
-                                accept = *(Accept*)sbuf;
-
-                                if (accept.num1 == 0){
-                                    printf("下棋失败,这里已经有一个棋子了\n");
-                                }
-                                else if (accept.num1 == 2){
-                                    printf("你赢了!");
-                                    system("pause");
-                                    break;
-                                }
-                                else{
-                                    break;
-                                }
-                            }
-                            if (accept.num1 == 2){
-                                player.win += 1;
-                                break;
-                            }
-                        }
-                    }
-                    else{
-                        printf("当前桌上你有一位玩家,请等待...\n");
-                    }
-                    delay();
+                    Sleep(500);
                 }
                 continue;
             }
-            else{
-                printf("上桌失败");
-                printf(",这桌已经满了\n");
-                system("pause");
+            else{//上桌失败
+                mode = 1;
                 continue;
             }
         }
-        else if (choice == 2){
-            SingleGame();
+        else if (choice/10 == 2){
+            SingleGame(choice%10);
         }
-        else if(choice == 3){
-            request = PackModifyRequest();
+        else if(choice == 3){//修改密码
+            char npw[20];
+            if (!ModifyInterface(npw)){
+                continue;
+            }
+            request = PackModifyRequest(npw);
+
             Trans(sbuf,&request,64);
 
             SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
@@ -212,17 +192,21 @@ int main()
             accept = *(Accept*)sbuf;
 
             if(accept.num1 == 1){
-                printf("修改成功!\n");
-                system("pause");
-                continue;
-            }
-            else{
-                printf("修改失败");
-                system("pause");
                 continue;
             }
         }
-        else if(choice == 4){
+        else if(choice == 4){//登出
+            request = PackExitRequest();
+            Trans(sbuf,&request,64);
+
+            SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
+            connect(clifd,(struct sockaddr*)&servaddr,sizeof(servaddr));
+            send(clifd,sbuf,64,0);
+            closesocket(clifd);
+
+            goto start;
+        }
+        else if(choice == 5){//退出
             request = PackExitRequest();
             Trans(sbuf,&request,64);
 
@@ -231,10 +215,6 @@ int main()
             send(clifd,sbuf,64,0);
             closesocket(clifd);
             exit(0);
-        }
-        else{
-            printf("你输入的啥啊\n");
-            system("pause");
         }
     }
 }
@@ -251,16 +231,4 @@ void LoadStatus(Accept accept)
 {
     player.win = accept.num2;
     player.lose = accept.num3;    
-}
-
-void delay()
-{
-    time_t last,cur;
-    time(&cur);
-    while(1){
-        time(&last);
-        if (last>cur){
-            return;
-        }
-    }
 }

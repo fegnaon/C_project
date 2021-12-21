@@ -27,22 +27,26 @@ typedef struct accept{
     int num3;
 }Accept;
 
-Status player;
+extern Status player;
 
 extern void PrintMainMenu();
-extern void PrintLoginInterface();
+extern int LoginInterface(char *ac,char *psw,int tip);
+extern int MainMenuInterface(int mode);
+extern int ModifyInterface(char* psw);
+extern void GameInterface(Table table,int myturn,int* i,int* j);
 extern void PrintTable(Table table);
 
-extern Request PackLoginRequest();
-extern Request PackRegisterRequest();
-extern Request PackModifyRequest();
+extern Request PackLoginRequest(char *account,char *password);
+extern Request PackRegisterRequest(char *account,char *password);
+extern Request PackModifyRequest(char *psw);
 extern Request PackStartRequest();
 extern Request PackPullTableRequest();
-extern Request PackChessRequest();
+extern Request PackChessRequest(int row,int column);
 extern Request PackExitRequest();
 
-extern void Initialize();
-extern void SingleGame();
+extern void InitializeAI();
+extern void InitializeUI();
+extern void SingleGame(int turn);
 
 void Trans(char *buf,void *res,int len);
 void LoadStatus(Accept accept);

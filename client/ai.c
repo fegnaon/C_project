@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "ai.h"
 
-void Initialize()
+void InitializeAI()
 {
     int i,j;
     for (i = 0;i < 255;i ++)
@@ -90,7 +90,6 @@ void Game(int* maxi,int* maxj,char (*board)[15],char mpiece,char epiece)
     int re = rand();
     *maxi = mi[re%cnt];
     *maxj = mj[re%cnt];
-    board[*maxi][*maxj] = mpiece;    
 }
 
 
