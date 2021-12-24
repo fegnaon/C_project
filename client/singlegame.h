@@ -5,6 +5,11 @@ typedef struct table{
     int turn;
 }Table;
 
+typedef struct Stack{
+    int sequence[225][2];
+    int length;
+}Stack;
+
 int CheckIfEnd(char (*board)[15],int row,int column);
 
 extern void GameInterface(Table table,int myturn,int* i,int* j);

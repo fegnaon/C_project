@@ -22,11 +22,25 @@ void SingleGame(int turn)
     table.turn = turn;
 
     int row,column;
+    Stack stack = {0};
     while(true)
     {
         if (table.turn == 0){
             GameInterface(table,0,&row,&column);
+            if (row == 20){//·µ»Ø²Ëµ¥
+                return;
+            }
+            if (row == 19){//»ÚÆå
+                stack.length -= 1;
+                table.board[stack.sequence[stack.length][0]][stack.sequence[stack.length][1]] = '.';
+                stack.length -= 1;
+                table.board[stack.sequence[stack.length][0]][stack.sequence[stack.length][1]] = '.';
+                continue;
+            }
             table.board[row][column] = '0';
+            stack.sequence[stack.length][0] = row;
+            stack.sequence[stack.length][1] = column;
+            stack.length += 1;
             table.turn = (table.turn+1)%2;
             if (CheckIfEnd(table.board,row,column)){
                 table.turn = -3;
@@ -38,6 +52,9 @@ void SingleGame(int turn)
         else{
             Game(&row,&column,table.board,'1','0');
             table.board[row][column] = '1';
+            stack.sequence[stack.length][0] = row;
+            stack.sequence[stack.length][1] = column;
+            stack.length += 1;
             table.turn = (table.turn+1)%2;
             if (CheckIfEnd(table.board,row,column)){
                 table.turn = -4;
@@ -48,7 +65,6 @@ void SingleGame(int turn)
     }
 
     GameInterface(table,0,&row,&column);
-
     return;
 }
 

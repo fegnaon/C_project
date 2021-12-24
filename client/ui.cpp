@@ -216,6 +216,12 @@ void GameInterface(Table table,int myturn,int* i,int* j)
         outtextxy(500,250,"ÓÎÏ·ÔÝÎ´¿ªÊ¼");
         outtextxy(500,300,"ÇëµÈ´ý...");
     }
+    int ifsingle = 0;
+    if(!strcmp(table.player1,"µçÄÔ")){
+        outtextxy(550,350,"·µ»Ø");
+        outtextxy(550,300,"»ÚÆå");
+        ifsingle = 1;
+    }
 
     delay_ms(1);
     mouse_msg msg = {0};
@@ -233,6 +239,14 @@ void GameInterface(Table table,int myturn,int* i,int* j)
             if ((int)msg.is_left() == 1 && (int)msg.is_down() == 1){
                 row = (msg.y-45)/30;
                 column = (msg.x-45)/30;
+                if (ifsingle == 1&&msg.x>=550&&msg.x<=600&&msg.y>=350&&msg.y<=375){//·µ»Ø²Ëµ¥
+                    *i = 20;
+                    return;
+                }
+                if (ifsingle == 1&&msg.x>=550&&msg.x<=600&&msg.y>=300&&msg.y<=325){//»ÚÆå
+                    *i = 19;
+                    return;
+                }
                 if (table.board[row][column] == '.' && row < 15 && msg.y-45 > -1 && msg.x-45 > -1 && column < 15){
                     *i = row;
                     *j = column;
