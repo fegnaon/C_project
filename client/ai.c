@@ -17,7 +17,7 @@ void InitializeAI()
     }
 }
 
-void Game(int* maxi,int* maxj,char (*board)[15],char mpiece,char epiece)
+void Game(int* maxi,int* maxj,char (*board)[15],char mpiece,char epiece)//¾ö²ßº¯Êý
 {
     int i,j,k,l;
     int mi[225] = {0},mj[225] = {0},cnt = 0;

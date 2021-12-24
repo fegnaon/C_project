@@ -26,13 +26,20 @@ void* Commands(void *a)
         if (!strcmp(command,"account")){
             ShowAllAccount();
         }
+        if (!strcmp(command,"cleartables")){
+            Initialize_All_Table();
+        }
     }
 }
 
 int main()
 {
-    //初始�?
+    //初始化
     //初始化socket
+    //初始化账号系统
+    Initialize_All_Account_Info();
+    //初始化所有棋盘
+    Initialize_All_Table();
     int size = sizeof(struct sockaddr_in);
 
     int servfd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
@@ -44,10 +51,6 @@ int main()
     servaddr.sin_port = htons(6666);
     bind(servfd,(struct sockaddr*)&servaddr,size);
     listen(servfd,20);
-    //初始化账号系�?
-    Initialize_All_Account_Info();
-    //初始化所有棋�?
-    Initialize_All_Table();
 
     Request request;
     char sbuf[64];
@@ -118,7 +121,7 @@ void Initialize_All_Table()
 
 void Start(Request request,char *buf)
 {
-//先检查是否桌上已经满�?
+//先检查是否桌上已经满人
     Answer answer = {0};
     int table_number = request.table_number;
 

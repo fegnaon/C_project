@@ -31,6 +31,9 @@ void SingleGame(int turn)
                 return;
             }
             if (row == 19){//»ÚÆå
+                if (stack.length == 0){
+                    continue;
+                }
                 stack.length -= 1;
                 table.board[stack.sequence[stack.length][0]][stack.sequence[stack.length][1]] = '.';
                 stack.length -= 1;

@@ -39,6 +39,8 @@ int LoginInterface(char *ac,char *psw,int tip)
         case 5:setcolor(RED);outtextxy(300,240,"注册失败,该账号已存在");break;
     }
     setcolor(BLACK);
+    setfont(18,0,"黑体");
+    outtextxy(100,500,"游戏规则:率先将五个子连在一条线上的胜利，注册与登录前请先输入密码");
     setfont(24,0,"黑体");
     outtextxy(330,300,"单人游戏");
     outtextxy(330,350,"退出游戏");
@@ -100,7 +102,7 @@ int LoginInterface(char *ac,char *psw,int tip)
                 return 31;
             }
             if (msg.x>=330&&msg.x<=430&&msg.y>=350&&msg.y<=370){//退出游戏
-                exit(0);
+                return 4;
             }
             if (msg.x>=300&&msg.x<=500&&msg.y>=150&&msg.y<=170){//账号
                 ifac = 1;
@@ -267,6 +269,8 @@ int MainMenuInterface(int mode)
 
     setfont(30,0,"黑体");
     outtextxy(290,50,"五子棋小游戏");
+    setfont(18,0,"黑体");
+    outtextxy(100,500,"若要联机游戏，请和朋友输入相同的联机暗号进行联机");
     setfont(24,0,"黑体");
     outtextxy(240,150,"账号:");
     outtextxy(300,150,player.account);
