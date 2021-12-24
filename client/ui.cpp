@@ -6,13 +6,15 @@
 
 void InitializeUI()
 {
-    initgraph(800,600);
+    initgraph(800,600,INIT_NOFORCEEXIT);
     setcaption("五子棋小游戏");
     setbkcolor(WHITE);
 }
 
 int LoginInterface(char *ac,char *psw,int tip)
 {   
+    ac[0] = '\0';
+    psw[0] = '\0';
     setbkcolor(WHITE);
     cleardevice();
 
@@ -64,10 +66,28 @@ int LoginInterface(char *ac,char *psw,int tip)
         if ((int)msg.is_left() == 1 && (int)msg.is_down() == 1){
             ifac = ifpsw = 0;
             if (msg.x>=500&&msg.x<=550&&msg.y>=150&&msg.y<=175){//登录
-                return 1;
+                if (strlen(psw)==0||strlen(ac)==0){
+                    setcolor(RED);
+                    setfont(20,0,"黑体");
+                    outtextxy(300,240,"密码或账号为空");
+                    setfont(24,0,"黑体");
+                    setcolor(BLACK);
+                }
+                else{
+                    return 1;
+                }
             }
             if (msg.x>=500&&msg.x<=550&&msg.y>=200&&msg.y<=225){//注册
-                return 2;
+                if (strlen(psw)==0||strlen(ac)==0){
+                    setcolor(RED);
+                    setfont(20,0,"黑体");
+                    outtextxy(300,240,"密码或账号为空");
+                    setfont(24,0,"黑体");
+                    setcolor(BLACK);
+                }
+                else{
+                    return 2;
+                }
             }
             if (msg.x>=330&&msg.x<=430&&msg.y>=300&&msg.y<=320){//单人游戏
                 ifsingle = 1;
@@ -245,7 +265,7 @@ int MainMenuInterface(int mode)
     outtextxy(330,350,"退出游戏");
 
     int ifmul = 0,ifsingle = 0,ifnumber = 0,numberlen = 0;
-    char number[10],input;
+    char number[10] = {0},input;
     if (mode == 1){
         ifmul = 1;
         outtextxy(460,300,"暗号:___ 确认");
@@ -295,8 +315,17 @@ int MainMenuInterface(int mode)
                 ifnumber = 1;
             }
             if (ifmul==1&&msg.x>=570&&msg.x<=620&&msg.y>=300&&msg.y<=325){//确认
-                player.table_number = atoi(number);
-                return 1;
+                if (strlen(number)==0){
+                    setcolor(RED);
+                    setfont(20,0,"黑体");
+                    outtextxy(460,350,"不能为空");
+                    setfont(24,0,"黑体");
+                    setcolor(BLACK);
+                }
+                else{
+                    player.table_number = atoi(number);
+                    return 1;
+                }
             }
             if (msg.x>=330&&msg.x<=430&&msg.y>=350&&msg.y<=375){//退出游戏
                 return 5;
@@ -324,7 +353,8 @@ int MainMenuInterface(int mode)
 }
 
 int ModifyInterface(char* psw)
-{
+{   
+    psw[0] = '\0';
     setbkcolor(WHITE);
     cleardevice();
 
@@ -362,9 +392,19 @@ int ModifyInterface(char* psw)
                 ifcnpw = 1;
             }
             if (msg.x>=500&&msg.x<=550&&msg.y>=200&&msg.y<=225){//确认
-                if (strcmp(npw,cnpw)){
+                if (strlen(npw)==0){
                     setcolor(RED);
+                    setfont(20,0,"黑体");
+                    outtextxy(280,300,"密码不能为空");
+                    setfont(24,0,"黑体");
+                    setcolor(BLACK);
+                }
+                else if (strcmp(npw,cnpw)){
+                    setcolor(RED);
+                    setfont(20,0,"黑体");
                     outtextxy(280,300,"两次密码不一致!");
+                    setfont(24,0,"黑体");
+                    setcolor(BLACK);
                 }
                 else{
                     strcpy(psw,npw);

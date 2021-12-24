@@ -4,12 +4,21 @@
 #include <stdbool.h>
 #include <time.h>
 #include <windows.h>
-#include "client.h"
+#include <graphics.h>
+#include <pthread.h>
 #pragma comment (lib,"ws2_32.lib")
+#include "client.h"
 
 #define BUFSIZE 64
 
 Status player;
+
+void* checkisrun(void* servaddr)
+{
+    for(;is_run();delay(100));
+    logout(*(struct sockaddr_in*)servaddr);
+    exit(0);
+}
 
 int main()
 {   
@@ -31,9 +40,10 @@ int main()
     int tip = 0;
 
     player.table_number = 0;
-
     InitializeAI();
     InitializeUI();
+    pthread_t th;
+    pthread_create(&th,NULL,checkisrun,&servaddr);
 
 //初始菜单
     start:
@@ -104,7 +114,6 @@ int main()
             exit(0);
         }
     }
-
 //主菜单
     while(true)
     {   
@@ -160,7 +169,6 @@ int main()
                     }
                     else{
                         GameInterface(new_table,myturn,&row,&column);
-                        Sleep(200);
                     }
                     if (new_table.turn == -4){
                         player.lose += 1;
@@ -170,6 +178,7 @@ int main()
                         player.win += 1;
                         break;
                     }
+                    Sleep(200);
                 }
                 continue;
             }
@@ -203,24 +212,12 @@ int main()
             }
         }
         else if(choice == 4){//登出
-            request = PackExitRequest();
-            Trans(sbuf,&request,64);
-
-            SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
-            connect(clifd,(struct sockaddr*)&servaddr,sizeof(servaddr));
-            send(clifd,sbuf,64,0);
-            closesocket(clifd);
+            logout(servaddr);
 
             goto start;
         }
         else if(choice == 5){//退出
-            request = PackExitRequest();
-            Trans(sbuf,&request,64);
-
-            SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
-            connect(clifd,(struct sockaddr*)&servaddr,sizeof(servaddr));
-            send(clifd,sbuf,64,0);
-            closesocket(clifd);
+            logout(servaddr);
             exit(0);
         }
     }
@@ -238,4 +235,16 @@ void LoadStatus(Accept accept)
 {
     player.win = accept.num2;
     player.lose = accept.num3;    
+}
+
+void logout(struct sockaddr_in servaddr)
+{
+    Request request = PackExitRequest();
+    char sbuf[64];
+    Trans(sbuf,&request,64);
+    
+    SOCKET clifd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
+    connect(clifd,(struct sockaddr*)&servaddr,sizeof(servaddr));
+    send(clifd,sbuf,64,0);
+    closesocket(clifd);
 }

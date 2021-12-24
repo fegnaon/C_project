@@ -10,7 +10,7 @@
 #include <pthread.h>
 #include "server.h"
 
-void* CloseServer(void *a)
+void* Commands(void *a)
 {   
     char command[32];
     while(true)
@@ -31,7 +31,7 @@ void* CloseServer(void *a)
 
 int main()
 {
-    //初始化
+    //初始�?
     //初始化socket
     int size = sizeof(struct sockaddr_in);
 
@@ -44,16 +44,16 @@ int main()
     servaddr.sin_port = htons(6666);
     bind(servfd,(struct sockaddr*)&servaddr,size);
     listen(servfd,20);
-    //初始化账号系统
+    //初始化账号系�?
     Initialize_All_Account_Info();
-    //初始化所有棋桌
+    //初始化所有棋�?
     Initialize_All_Table();
 
     Request request;
     char sbuf[64];
     char lbuf[512];
     pthread_t th;
-    pthread_create(&th,NULL,CloseServer,NULL);
+    pthread_create(&th,NULL,Commands,NULL);
 
     while(1)
     {
@@ -118,7 +118,7 @@ void Initialize_All_Table()
 
 void Start(Request request,char *buf)
 {
-//先检查是否桌上已经满了
+//先检查是否桌上已经满�?
     Answer answer = {0};
     int table_number = request.table_number;
 

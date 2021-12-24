@@ -48,3 +48,4 @@ extern void SingleGame(int turn);
 
 void Trans(char *buf,void *res,int len);
 void LoadStatus(Accept accept);
+void logout(struct sockaddr_in servaddr);
